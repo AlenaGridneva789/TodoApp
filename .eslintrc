@@ -94,6 +94,10 @@
         "import/export": 0
     },
     "settings": {
+        "react" : {
+            "pragma": "React",
+            "version": "detect"
+        },
         "import/resolver": {
             "node": {
                 "extensions": [

@@ -3,19 +3,15 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 import './App.css'
 
-import NewTaskForm from './NewTaskForm'
-import TaskList from './TaskList'
-import Footer from './Footer'
+import NewTaskForm from '../NewTaskForm/NewTaskForm'
+import TaskList from '../TaskList/TaskList'
+import Footer from '../Footer/Footer'
 
 export default class App extends Component {
   maxId = 100
   mydate = new Date()
   state = {
-    todoData: [
-      this.createTodoItem('Completed task', this.mydate),
-      this.createTodoItem('Editing task', this.mydate),
-      this.createTodoItem('Active task', this.mydate),
-    ],
+    todoData: [],
     filter: 'all',
   }
   createTodoItem(label, createDate) {
@@ -26,10 +22,12 @@ export default class App extends Component {
       completed: false,
       id: this.maxId++,
       date: date,
+      editing: false,
     }
   }
 
   deleteItem = (id) => {
+    console.log(id)
     this.setState(({ todoData }) => {
       const idx = todoData.findIndex((el) => el.id === id)
       const arrBefore = todoData.slice(0, idx)
@@ -60,6 +58,17 @@ export default class App extends Component {
       }
     })
   }
+  onToggleEditing = (id) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id)
+      const oldItem = todoData[idx]
+      const newItem = { ...oldItem, editing: !oldItem.editing }
+      const newArr = [...todoData.slice(0, idx), newItem, ...todoData.slice(idx + 1)]
+      return {
+        todoData: newArr,
+      }
+    })
+  }
   clearAllCompleted = () => {
     this.setState(({ todoData }) => {
       const newArr = todoData.filter((el) => !el.completed)
@@ -80,6 +89,17 @@ export default class App extends Component {
       return todoData.filter((el) => el.completed)
     }
   }
+  editItemValue = (text, id) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id)
+      const oldItem = todoData[idx]
+      const newItem = { ...oldItem, label: text }
+      const newArr = [...todoData.slice(0, idx), newItem, ...todoData.slice(idx + 1)]
+      return {
+        todoData: newArr,
+      }
+    })
+  }
   render() {
     const { todoData, filter } = this.state
     const completedCount = this.state.todoData.filter((el) => !el.completed).length
@@ -92,7 +112,13 @@ export default class App extends Component {
           <NewTaskForm onItemAdded={this.addItem} />
         </header>
         <section className="main">
-          <TaskList onDeleted={this.deleteItem} onToggleDone={this.onToggleDone} todos={visibleItems} />
+          <TaskList
+            onDeleted={this.deleteItem}
+            onToggleDone={this.onToggleDone}
+            todos={visibleItems}
+            onToggleEditing={this.onToggleEditing}
+            editItemValue={this.editItemValue}
+          />
           <Footer
             completedCount={completedCount}
             onClearAllCompleted={this.clearAllCompleted}
