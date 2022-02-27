@@ -19,14 +19,19 @@ export default class Task extends Component {
     onToggleDone: propTypes.func,
     completed: propTypes.bool,
   }
-  timer = setInterval(() => {
-    if (this.state.timerOn && this.state.time) {
-      this.setState((state) => ({
-        ...state,
-        time: state.time - 1,
-      }))
-    }
-  }, 1000)
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      if (this.state.timerOn && this.state.time) {
+        this.setState((state) => ({
+          ...state,
+          time: state.time - 1,
+        }))
+      }
+    }, 1000)
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer)
+  }
   startTime = () => {
     this.setState((state) => ({
       ...state,
