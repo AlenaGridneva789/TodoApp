@@ -6,10 +6,15 @@ import Task from '../Task/Task'
 
 function TaskList({ todos, onDeleted, onToggleDone, onToggleEditing, editItemValue }) {
   const elements = todos.map((item) => {
-    const { id, ...itemProps } = item
+    const { id, min, sec, time, createDate, ...itemProps } = item
     return (
       <Task
         key={id}
+        id={id}
+        min={min}
+        sec={sec}
+        time={time}
+        createDate={createDate}
         {...itemProps}
         onDeleted={() => onDeleted(id)}
         onToggleDone={() => onToggleDone(id)}

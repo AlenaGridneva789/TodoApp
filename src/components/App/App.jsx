@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-
 import './App.css'
 
 import NewTaskForm from '../NewTaskForm/NewTaskForm'
@@ -9,25 +8,40 @@ import Footer from '../Footer/Footer'
 
 export default class App extends Component {
   maxId = 100
-  mydate = new Date()
   state = {
     todoData: [],
     filter: 'all',
   }
-  createTodoItem(label, createDate) {
-    const date = formatDistanceToNow(new Date(createDate), { includeSeconds: true })
-
+  createTime = () => {
+    this.setState((state) => ({
+      ...state,
+      todoData: state.todoData.map((element) => ({
+        ...element,
+        createDate: `created ${formatDistanceToNow(element.date, {
+          includeSeconds: true,
+          addSuffix: true,
+        })}`,
+      })),
+    }))
+  }
+  createTodoItem(label, min, sec) {
     return {
       label: label,
+      time: Number(min) * 60 + Number(sec),
+      min: Number(min),
+      sec: Number(sec),
       completed: false,
       id: this.maxId++,
-      date: date,
       editing: false,
+      createDate: formatDistanceToNow(Date.now(), {
+        includeSeconds: true,
+        addSuffix: true,
+      }),
+      date: Date.now(),
     }
   }
 
   deleteItem = (id) => {
-    console.log(id)
     this.setState(({ todoData }) => {
       const idx = todoData.findIndex((el) => el.id === id)
       const arrBefore = todoData.slice(0, idx)
@@ -37,15 +51,17 @@ export default class App extends Component {
         todoData: newArr,
       }
     })
+    this.createTime()
   }
-  addItem = (text, createDate) => {
-    const newItem = this.createTodoItem(text, createDate)
+  addItem = (text, min, sec) => {
+    const newItem = this.createTodoItem(text, min, sec)
     this.setState(({ todoData }) => {
       const newArr = [...todoData, newItem]
       return {
         todoData: newArr,
       }
     })
+    this.createTime()
   }
   onToggleDone = (id) => {
     this.setState(({ todoData }) => {
@@ -99,12 +115,12 @@ export default class App extends Component {
         todoData: newArr,
       }
     })
+    this.createTime()
   }
   render() {
     const { todoData, filter } = this.state
     const completedCount = this.state.todoData.filter((el) => !el.completed).length
     const visibleItems = this.filterItems(todoData, filter)
-
     return (
       <section className="todoapp">
         <header className="header">
