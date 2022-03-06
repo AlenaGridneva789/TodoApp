@@ -124,7 +124,7 @@ export default class App extends Component {
     return (
       <section className="todoapp">
         <header className="header">
-          <h1>todos</h1>
+          <h1>Todos</h1>
           <NewTaskForm onItemAdded={this.addItem} />
         </header>
         <section className="main">
